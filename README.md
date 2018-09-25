@@ -106,3 +106,9 @@ mv composer.phar /usr/local/bin/composer
 `apt-get install git`
 * 安装laravel5.4
 `composer create-project laravel/laravel blog --prefer-dist "5.4.*"`
+## gitlab部署
+* [参考gitlab笔记](https://github.com/FYKANG/gitlab_note)
+## jenkins部署
+`docker pull jenkinsci/jenkins #拉取jenkins镜像`
+`docker run -d -p 9990:8080 -p 50000:50000 --name=jenkins -v /opt/jenkins:/optjenkins --link gitlab-ce:gitlab -u root jenkinsci/jenkins:latest #运行容器`
+`chown -R 1000 /opt/jenkins #赋予挂载目录权限`
