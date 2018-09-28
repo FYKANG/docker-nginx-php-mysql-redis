@@ -1,10 +1,10 @@
 # 使用docker搭建nginx-php-mysql-redis环境
 
 ## 镜像的获取
-`docker pull nginx #获取nginx镜像`
-`docker pull php:7.1-fpm #获取php镜像`
-`dokcer pull mysql #获取mysql镜像`
-`docker pull redis #获取redis镜像`
+* `docker pull nginx #获取nginx镜像`
+* `docker pull php:7.1-fpm #获取php镜像`
+* `dokcer pull mysql #获取mysql镜像`
+* `docker pull redis #获取redis镜像`
 
 ## 启动镜像
 
@@ -94,7 +94,7 @@ mysql> flush privileges;  #刷新数据库
 
 ```
 
-## php-fpm容器中是用composer
+## php-fpm容器中使用composer
 * composer安装
 ```
 curl -sS https://getcomposer.org/installer | phpapt-get install composer
@@ -109,6 +109,18 @@ mv composer.phar /usr/local/bin/composer
 ## gitlab部署
 * [参考gitlab笔记](https://github.com/FYKANG/gitlab_note)
 ## jenkins部署
-`docker pull jenkinsci/jenkins #拉取jenkins镜像`
-`docker run -d -p 9990:8080 -p 50000:50000 --name=jenkins -v /opt/jenkins:/optjenkins --link gitlab-ce:gitlab -u root jenkinsci/jenkins:latest #运行容器`
-`chown -R 1000 /opt/jenkins #赋予挂载目录权限`
+* 安装步骤
+    * `docker pull jenkinsci/jenkins #拉取jenkins镜像`
+    * `docker run -d --privileged -p 9990:8080 -p 50000:50000 --name=jenkins -v /opt/jenkins:/opt/jenkins --link gitlab-ce:gitlab -u root -v $(which docker)r:/bin/docker jenkinsci/jenkins:latest #运行容器`
+    * `chown -R 1000 /opt/jenkins #赋予挂载目录权限`
+* jenkins的docker插件配置
+1. 开启docker的tcp端口
+    * 修改 `/etc/sysconfig/docker` 中设置为
+        * `OPTIONS='--selinux-enabled -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375'`
+    * 重启docker
+        * `systemctl daemon-reload`
+        * `systemctl restart docker`
+* 重要目录
+    * `/var/jenkins_home/workspace/ #项目更目录`
+
+## shell脚本构建
