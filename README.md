@@ -9,13 +9,13 @@
 ## 启动镜像
 
 * php
- `docker run -d --name=php -v /docker_web/www:/home php:7.1-fpm`
+ `docker run -d --name=php -v /docker_web/www:/www php:7.1-fpm`
 * redis 
 `docker run -d --name=redis redis`
 * mysql 
 `docker run -d --name=mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql`
 * nginx
-`docker run -d --name=nginx -p 8880:80 -v /docker_web/www:/home -v /docker_web/nginx/conf.d:/etc/nginx/conf.d --link php:php --link redis:redis --link mysql:mysql nginx `
+`docker run -d --name=nginx -p 8880:80 -v /docker_web/www:/www -v /docker_web/nginx/conf.d:/etc/nginx/conf.d --link php:php --link redis:redis --link mysql:mysql nginx `
 ```
 -d #后台守护
 -name #容器自定义名称
@@ -97,8 +97,10 @@ mysql> flush privileges;  #刷新数据库
 ## php-fpm容器中使用composer
 * composer安装
 ```
-curl -sS https://getcomposer.org/installer | phpapt-get install composer
+curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
+apt-get update
+apt-get install composer
 ```
 * 更换国内镜像
 `composer config -g repositories.packagist composer https://packagist.phpcomposer.com`
@@ -124,3 +126,10 @@ mv composer.phar /usr/local/bin/composer
     * `/var/jenkins_home/workspace/ #项目更目录`
 
 ## shell脚本构建
+docker stop mynginx
+docker rm mynginx
+docker rmi tx.ykthink.cn/mynginx:v2
+docker pull tx.ykthink.cn/mynginx:v2
+rm -rf /docker_web/www/*
+docker run -d -p 8880:80 --link php:php --link redis:redis -v /docker_web/nginx/conf.d:/etc/nginx/conf.d -v /docker_web/www:/www --name=mynginx  tx.ykthink.cn/mynginx:v2
+docker cp mynginx:/home/. /docker_web/www/
